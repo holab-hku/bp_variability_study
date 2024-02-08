@@ -1,7 +1,3 @@
-setwd("~/OneDrive - connect.hku.hk/Metagenomics/Hypertension")
-setwd("C:/Users/GordonQ/OneDrive - connect.hku.hk/Metagenomics/Hypertension")
-setwd("C:/Users/gordo/OneDrive - The University of Hong Kong - Connect/Metagenomics/Hypertension")
-
 library(mixOmics)
 library(ggplot2)
 library(reshape2)
@@ -24,7 +20,7 @@ norm_n_filter <- function(dat){
 }
 {
   #Meta data
-  primary.dat <- read.csv("Data/Clinical/300 Cohort final_checked 2022_02_24/Primary_data.csv",header = T,row.names = 1)
+  primary.dat <- read.csv("data/Primary_data.csv",header = T,row.names = 1)
   colnames(primary.dat) <- gsub("\\.\\..*", "", colnames(primary.dat))
   rownames(primary.dat) <- toupper(rownames(primary.dat))
   primary.dat["R0446","Hypertension.Staging"] <- 1
@@ -36,11 +32,11 @@ norm_n_filter <- function(dat){
   colnames(primary.dat) <- gsub("Standard\\.Deviation","SD",colnames(primary.dat))
   
   
-  secondary.dat <- read.csv("Data/Clinical/300 Cohort final_checked 2022_02_24/Secondary_data.csv", header = T,row.names = 1)
+  secondary.dat <- read.csv("data/Secondary_data.csv", header = T,row.names = 1)
   colnames(secondary.dat) <- gsub("\\.\\..*", "", colnames(secondary.dat))
   rownames(secondary.dat) <- toupper(rownames(secondary.dat))
   
-  blood.stool.dat <- read.csv("Data/Clinical/GM cohort_raw data_no HTN meds_SCFA outiers removed_PV_05May22.csv", header = T,row.names = 1)
+  blood.stool.dat <- read.csv("data/GM cohort_raw data_no HTN meds_SCFA outiers removed_PV_05May22.csv", header = T,row.names = 1)
   colnames(blood.stool.dat) <- gsub("\\.\\..*", "", colnames(blood.stool.dat))
   rownames(blood.stool.dat) <- toupper(rownames(blood.stool.dat))
   blood.stool.dat <- blood.stool.dat[,71:105]
@@ -50,39 +46,39 @@ norm_n_filter <- function(dat){
   blood.stool.dat = subset(blood.stool.dat, select = -c(Total.SCFAs.1))
   
   #Dietary Data
-  diet.dat <- read.csv("Data/Clinical/HEI_20220422/score.csv", header = T, row.names = 1)
+  diet.dat <- read.csv("data/score.csv", header = T, row.names = 1)
   colnames(diet.dat) <- gsub("\\.\\..*", "", colnames(diet.dat))
   rownames(diet.dat) <- toupper(rownames(diet.dat))
     
   #Extra Dietary Data
-  food.groups.dat <- read.csv("Data/Clinical/HEI_20220422/food_groups.csv", header = T, row.names = 1)
+  food.groups.dat <- read.csv("data/food_groups.csv", header = T, row.names = 1)
   colnames(food.groups.dat) <- gsub("\\.\\..*", "", colnames(food.groups.dat))
   rownames(food.groups.dat) <- toupper(rownames(food.groups.dat))
   
   #Diet group Data
-  diet.groups.dat <- read.csv("Data/Clinical/HEI_20220422/diet_groups.csv", header = T, row.names = 1)
+  diet.groups.dat <- read.csv("data/diet_groups.csv", header = T, row.names = 1)
   colnames(diet.groups.dat) <- gsub("\\.\\..*", "", colnames(diet.groups.dat))
   rownames(diet.groups.dat) <- toupper(rownames(diet.groups.dat))
   diet.groups.dat$med_original_unhealthy <- ifelse(diet.groups.dat$med_original >= 4, 0, 1)
   diet.groups.dat$DASH_mullen_unhealthy <- ifelse(diet.groups.dat$DASH_mullen >= 4.5, 0, 1)
   
   #Dietary Selenium Data
-  selenium <- read.csv("Data/Clinical/HEI_20220422/selenium.csv", header = T, row.names = 1)
+  selenium <- read.csv("data/selenium.csv", header = T, row.names = 1)
   rownames(selenium) <- toupper(rownames(selenium))
   
   #Dietary Macro/Micro - nutrients data
-  nutrients.dat <- read.csv("Data/Clinical/HEI_20220422/18012022_diet_241 cohort.csv", header = T, row.names = 1)
+  nutrients.dat <- read.csv("data/18012022_diet_241 cohort.csv", header = T, row.names = 1)
   nutri_feats <- c("Carbohydrate_available_g","Total_fat_g","Protein_g","Retinol_µg","Beta_carotene_µg","Vitamin_C_mg" ,"Vitamin_E_mg","Potassium_mg","Magnesium_mg","Calcium_mg",
                    "Phosphorus_mg","Iron_mg","Zinc_mg","Manganese_µg","Iodine_µg")
   nutrients.dat <- nutrients.dat[,nutri_feats]
   rownames(nutrients.dat) <- toupper(rownames(nutrients.dat))
   
   #Sleep data
-  sleep_data <- read.csv("Data/Clinical/241_sleep_data.csv", row.names = 1)
+  sleep_data <- read.csv("data/241_sleep_data.csv", row.names = 1)
   colnames(sleep_data) <- gsub("Latency.*","Latency",colnames(sleep_data))
   
   #MBPS data
-  mbps_data <- read.csv("Data/Clinical/241_MBPS_data.csv", row.names = 1)
+  mbps_data <- read.csv("data/241_MBPS_data.csv", row.names = 1)
   
   #Merge all tables
   pat_order <- rownames(primary.dat)
@@ -90,7 +86,7 @@ norm_n_filter <- function(dat){
   meta.data <- meta.data[,unlist(lapply(meta.data, is.numeric))]
   
   #Metagenomic data
-  read.data <- read.table("Data/300/metaphlan3_res.tsv", sep = "\t", header = T, row.names = 1)
+  read.data <- read.table("data/metaphlan3_res.tsv", sep = "\t", header = T, row.names = 1)
   read.data <- read.data[grepl("k__Bacteria",rownames(read.data)),]
   read.data <- read.data[,-1]
   colnames(read.data) <- substr(colnames(read.data), 1, 5); colnames(read.data) <- toupper(colnames(read.data))
@@ -118,8 +114,7 @@ norm_n_filter <- function(dat){
   transformed.phylum.data <- asin(sqrt(phylum.data))
   
   #Pathway data
-  path.data <- read.csv("Data/300/humann3_pathwayabundances.tsv", sep = "\t", header = T, row.names = 1)
-  path.data <- read.csv("Data/300/humann3_ko_unstratified.tsv", sep = "\t", header = T, row.names = 1)
+  path.data <- read.csv("data/humann3_ko_unstratified.tsv", sep = "\t", header = T, row.names = 1)
   colnames(path.data) <- substr(colnames(path.data), 1, 5); colnames(path.data) <- toupper(colnames(path.data))
   colnames(path.data) <- gsub("R(\\d*)\\.","R0\\1",colnames(path.data))
   common <- intersect(colnames(path.data),rownames(primary.dat))
